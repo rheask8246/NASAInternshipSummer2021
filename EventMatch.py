@@ -21,12 +21,20 @@ if args.kalmantra != "":
     KalmanFile = args.kalmantra
 
 #collects all ids from one tra file and stores in a list
-def id_list(filepath):
-    return
+def id_list(file):
+    openFile = open(file, "r")
+    eventList = []
+    for line in openFile:
+        strpLine = line.strip()
+        if stripLine[0] == 'I' and strpLine[1] == 'D':
+            eventList.append(stripLine)
+    return eventList
 
 #iterates through lists and counts how many ids are the same
 def eventMatch(stdList, kalmanList):
     return 0
 
-print(StdFile)
-print(KalmanFile)
+def test(File):
+    print(id_list(File))
+
+test(KalmanFile)
