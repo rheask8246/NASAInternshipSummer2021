@@ -28,4 +28,5 @@ def id_list(filepath):
 def eventMatch(stdList, kalmanList):
     return 0
 
-print(StdFile + \n + KalmanFile)
+print(StdFile)
+print(KalmanFile)
