@@ -26,7 +26,7 @@ def id_list(file):
     eventList = []
     for line in openFile:
         strpLine = line.strip()
-        if stripLine[0] == 'I' and strpLine[1] == 'D':
+        if strpLine[0] == 'I' and strpLine[1] == 'D':
             eventList.append(stripLine)
     return eventList
 
