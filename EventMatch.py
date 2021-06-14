@@ -39,6 +39,6 @@ def eventMatch(stdFile, kalmanFile):
         if stdList[i] in kalmanList:
             count += 1
     return count
-print("Number of events in standard reconstruction: " + len(id_list(StdFile)))
-print("Number of events in Kalman reconstruction: " + len(id_list(KalmanFile)))
+print("Number of events in standard reconstruction: " + str(len(id_list(StdFile))))
+print("Number of events in Kalman reconstruction: " + str(len(id_list(KalmanFile))))
 print("Number of shared events: " + eventMatch(StdFile, KalmanFile))
