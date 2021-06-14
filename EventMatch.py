@@ -27,7 +27,7 @@ def id_list(file):
     for line in openFile:
         strpLine = line.strip()
         if len(strpLine) > 2 and strpLine[0] == 'I' and strpLine[1] == 'D':
-            eventList.append(stripLine)
+            eventList.append(strpLine)
     return eventList
 
 #iterates through lists and counts how many ids are the same
