@@ -41,4 +41,4 @@ def eventMatch(stdFile, kalmanFile):
     return count
 print("Number of events in standard reconstruction: " + str(len(id_list(StdFile))))
 print("Number of events in Kalman reconstruction: " + str(len(id_list(KalmanFile))))
-print("Number of shared events: " + eventMatch(StdFile, KalmanFile))
+print("Number of shared events: " + str(eventMatch(StdFile, KalmanFile)))
