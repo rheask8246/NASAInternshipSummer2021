@@ -43,5 +43,5 @@ def eventMatch(stdFile, kalmanFile):
 
 #print(eventMatch(StdFile, KalmanFile))
 print(id_list(StdFile))
-print(\n)
+
 print(id_list(KalmanFile))
