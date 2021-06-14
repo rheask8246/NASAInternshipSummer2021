@@ -35,13 +35,9 @@ def eventMatch(stdFile, kalmanFile):
     stdList = id_list(stdFile)
     kalmanList = id_list(kalmanFile)
     count = 0
-    iter = range(min(len(stdList), len(kalmanList)))
-    for i in iter:
-        if stdList[i] == kalmanList[i]:
+    for (a, b) in zip(stdList, kalmanList):
+        if a == b:
             count += 1
     return count
 
-#print(eventMatch(StdFile, KalmanFile))
-print(id_list(StdFile))
-
-print(id_list(KalmanFile))
+print(eventMatch(StdFile, KalmanFile))
