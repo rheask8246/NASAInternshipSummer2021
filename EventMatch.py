@@ -41,4 +41,7 @@ def eventMatch(stdFile, kalmanFile):
             count += 1
     return count
 
-print(eventMatch(StdFile, KalmanFile))
+#print(eventMatch(StdFile, KalmanFile))
+print(id_list(StdFile))
+print(\n)
+print(id_list(KalmanFile))
