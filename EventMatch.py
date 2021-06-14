@@ -31,10 +31,14 @@ def id_list(file):
     return eventList
 
 #iterates through lists and counts how many ids are the same
-def eventMatch(stdList, kalmanList):
-    return 0
+def eventMatch(stdFile, kalmanFile):
+    stdList = id_list(stdFile)
+    kalmanList = id_list(kalmanFile)
+    count = 0
+    iter = range(min(len(stdList), len(kalmanList)))
+    for i in iter:
+        if stdList[i] == kalmanList[i]:
+            count += 1
+    return count
 
-def test(File):
-    print(id_list(File))
-
-test(KalmanFile)
+print(eventMatch(StdFile, KalmanFile))
