@@ -19,12 +19,16 @@ eventList = []
 def numPair(file):
     openFile = open(file, "r")
     pairCount = 0
-
+    currID = ""
     for line in openFile:
         values = line.split()
         if len(values) > 1 and values[0] == "ID":
+            #currID = line.strip()
             print(line.strip())
+            print(openFile.next())
+        #elif len(values) > 1 and values[1] == "INIT" and
     openFile.close()
+    return pairCount
 
 print("Number of pair events: " + str(numPair(SimFile)))
-print("Pair event IDs: " + eventList)
+print("Pair event IDs: " + str(eventList))
