@@ -39,6 +39,29 @@ def eventMatch(stdFile, kalmanFile):
         if stdList[i] in kalmanList:
             count += 1
     return count
+
+#counts number of events that are only in standard list
+def excStdList(stdFile, kalmanFile):
+    stdList = id_list(stdFile)
+    kalmanList = id_list(kalmanFile)
+    countstd = 0
+    for i in range(len(stdList)):
+        if stdList[i] not in kalmanList:
+            countstd += 1
+    return countstd
+
+#counts number of events that are only in kalman list
+def excKalmanList(stdFile, kalmanFile):
+    stdList = id_list(stdFile)
+    kalmanList = id_list(kalmanFile)
+    countkalman = 0
+    for i in range(len(kalmanList)):
+        if kalmanList[i] not in stdList:
+            countkalman += 1
+    return countkalman
+
 print("Number of events in standard reconstruction: " + str(len(id_list(StdFile))))
 print("Number of events in Kalman reconstruction: " + str(len(id_list(KalmanFile))))
 print("Number of shared events: " + str(eventMatch(StdFile, KalmanFile)))
+print("Number of events only in standard reconstruction: " + str(excStdList(StdFile, KalmanFile)))
+print("Number of events only in Kalman reconstruction: " + str(excKalmanList(StdFile, KalmanFile)))
