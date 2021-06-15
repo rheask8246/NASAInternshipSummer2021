@@ -20,15 +20,20 @@ def numPair(file):
     openFile = open(file, "r")
     pairCount = 0
     lines = openFile.readlines()
+    print("number of lines: " + str(len(lines)))
     for i in range(0, len(lines)):
         line = lines[i]
         if len(line) > 2 and line[0] == 'I' and line[1] == 'D':
+            print("current id: " + line.strip())
             j = i+1
             iterline = lines[j]
             while iterline[0] != 'I' and iterline[1] != 'D' and j < len(lines):
+                print("current line: " + str(j))
                 if iterline[3] == 'I' and iterline[4] == "N" and iterline[5] == "I" and iterline[6] == "T":
                     checkLine = lines[j+1]
+                    print("found init")
                     if checkLine[3] == "P" and checkLine[4] == "A" and checkLine[5] == "I" and checkLine[6] == "R":
+                        print("found pair")
                         strpLine = line.strip()
                         eventList.append(strpLine)
                         pairCount += 1
