@@ -1,4 +1,3 @@
-import os
 import argparse
 
 '''
@@ -8,7 +7,6 @@ Author: Rhea Senthil Kumar
 '''
 
 #command line/variable setup
-#CWD = os.getcwd()
 parser = argparse.ArgumentParser(description='Count matching event ids from 2 event reconstruction files.')
 parser.add_argument("-s", "--standardtra", type=str, default="FarFieldPointSource_1MeV.inc1.id1.tra")
 parser.add_argument("-k", "--kalmantra", type=str)
@@ -65,3 +63,4 @@ print("Number of events in Kalman reconstruction: " + str(len(id_list(KalmanFile
 print("Number of shared events: " + str(eventMatch(StdFile, KalmanFile)))
 print("Number of events only in standard reconstruction: " + str(excStdList(StdFile, KalmanFile)))
 print("Number of events only in Kalman reconstruction: " + str(excKalmanList(StdFile, KalmanFile)))
+#todo: can clean the calcualtions up
