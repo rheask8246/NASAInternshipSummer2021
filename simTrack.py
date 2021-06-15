@@ -22,7 +22,7 @@ def numPair(file):
 
     for line in openFile:
         values = line.split()
-        if values[0] == "ID":
+        if len(values) > 1 and values[0] == "ID":
             print(line.strip())
     openFile.close()
 
