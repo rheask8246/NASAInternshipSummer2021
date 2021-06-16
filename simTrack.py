@@ -13,12 +13,14 @@ args = parser.parse_args()
 if args.simfile != "":
     SimFile = args.simfile
 
-eventList = []
+pairEventList = []
+compEventList = []
 
 #collects all ids from one tra file and stores in a list. Returns number of pair events.
 def numPair(file):
     openFile = open(file, "r")
     pairCount = 0
+    comptonCount = 0
     currID = ""
     for line in openFile:
         values = line.split()
@@ -29,10 +31,14 @@ def numPair(file):
             splitLine = nextLine.split()
             if splitLine[1] == "PAIR":
                 pairCount += 1
-                eventList.append(currID)
+                pairEventList.append(currID)
+            elif splitLine[1] = "COMP":
+                comptonCount += 1
+                compEventList.append(currID)
         #elif len(values) > 1 and values[1] == "INIT" and
     openFile.close()
-    return pairCount
+    return comptonCount, pairCount
 
-print("Number of pair events: " + str(numPair(SimFile)))
+counts = numPair(SimFile)
+print("Compton events: {0[0]}, Pair events: {0[1]}".format(counts))
 #print("Pair event IDs: " + str(eventList))
