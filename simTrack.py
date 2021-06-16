@@ -22,10 +22,14 @@ def numPair(file):
     currID = ""
     for line in openFile:
         values = line.split()
+        if len(values) > 1 and values[0] == "ID":
+            currID = line.strip()
         if len(values) > 1 and values[1] == "INIT":
-            #currID = line.strip()
-            print(line.strip())
-            print(openFile.next())
+            nextLine = openFile.next()
+            splitLine = nextLine.split()
+            if splitLine[1] == "PAIR":
+                pairCount += 1
+                eventList.append(currID)
         #elif len(values) > 1 and values[1] == "INIT" and
     openFile.close()
     return pairCount
