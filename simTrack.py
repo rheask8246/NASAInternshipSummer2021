@@ -32,7 +32,7 @@ def numPair(file):
             if splitLine[1] == "PAIR":
                 pairCount += 1
                 pairEventList.append(currID)
-            elif splitLine[1] = "COMP":
+            elif splitLine[1] == "COMP":
                 comptonCount += 1
                 compEventList.append(currID)
         #elif len(values) > 1 and values[1] == "INIT" and
