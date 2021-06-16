@@ -35,4 +35,4 @@ def numPair(file):
     return pairCount
 
 print("Number of pair events: " + str(numPair(SimFile)))
-print("Pair event IDs: " + str(eventList))
+#print("Pair event IDs: " + str(eventList))
