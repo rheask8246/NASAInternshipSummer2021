@@ -22,7 +22,7 @@ def numPair(file):
     currID = ""
     for line in openFile:
         values = line.split()
-        if len(values) > 1 and values[0] == "ID":
+        if len(values) > 1 and values[1] == "INIT":
             #currID = line.strip()
             print(line.strip())
             print(openFile.next())
