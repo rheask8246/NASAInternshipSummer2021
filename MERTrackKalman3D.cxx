@@ -555,6 +555,8 @@ return List;
 */
 ////////////////////////////////////////////////////////////////////////////////
 
+// This function does the filtering and smoothing of the Kalman algorithm.
+
 Float_t MERTrackKalman3D::Kalman(MRERawEvent* RE, Int_t n, Float_t en, MRESEList Previous, vector < TMatrix > &trk, MRESEList &Chosen)
 {
 
@@ -588,6 +590,8 @@ Float_t MERTrackKalman3D::Kalman(MRERawEvent* RE, Int_t n, Float_t en, MRESEList
 
   Float_t height = 2*vertex.GetVolumeSequence()->GetDetector()->GetStructuralSize().GetZ();
   m_heightX0 = height/vertex.GetVolumeSequence()->GetDetector()->GetSensitiveVolume(0)->GetMaterial()->GetRadiationLength();
+
+// as of now, not known what units radiation length is in
 
   //Filtering
   Float_t t;// tan of the RMS of the scattering angle
@@ -893,14 +897,10 @@ tuple<vector < TMatrix >, Float_t, Float_t, vector < TMatrix >, Float_t, Float_t
   PrevChoice.Compress();
 
   //track 1
-  int count = 1;
   while(!stop){
-    //cout << "loop number (1): " << count << endl;
-    count = count + 1;
 
     chi1 = Kalman(RE, n, en, PrevChoice, trk1, Chosen1);
-    //cout << "chi1: " << chi1 << endl;
-
+    
     if (trk1.size()<3){
       return std::make_tuple(trk1, 0, 0, trk2, 0, 0, Chosen1, Chosen2);
     }
@@ -911,7 +911,8 @@ tuple<vector < TMatrix >, Float_t, Float_t, vector < TMatrix >, Float_t, Float_t
 
     nrg_est1 = MultipleScattering(trk1);
     //nrg_est1 = EnergyEst3D(trk1);
-    //cout << "nrg_est1: " << nrg_est1 << endl;
+
+//not sure why the part below is being done
 
     if (nrg_est1> 50000.) nrg_est1=50000.;
     if ((nrg_est1/en)<1/3){
@@ -924,7 +925,6 @@ tuple<vector < TMatrix >, Float_t, Float_t, vector < TMatrix >, Float_t, Float_t
       trk1.clear();
     } else stop=true;
   }
-  //cout << "en (1) : " << en << endl;
 
   for (size_t i = 0; i < trk1.size(); i++) {
     mdebug<<"Track1 after Kalman "<<trk1.size()<<" "<<trk1[i](0,0)<<" "<<trk1[i](1,0)<<endl;
@@ -933,14 +933,9 @@ tuple<vector < TMatrix >, Float_t, Float_t, vector < TMatrix >, Float_t, Float_t
   en = start_nrg_fit;
   Int_t loop2=0;
 
-  int count2 = 1;
   while(!stop){
-    //cout << "loop number (2) : " << count2 << endl;
-    count2 = count2 + 1;
-
     chi2 = Kalman(RE, n, en, Chosen1, trk2, Chosen2);
-    //cout << "chi2: " << chi2 << endl;
-
+    
     if (trk2.size()<3){
       return std::make_tuple(trk1, 0, 0, trk2, 0, 0, Chosen1, Chosen2);
     }
@@ -951,8 +946,7 @@ tuple<vector < TMatrix >, Float_t, Float_t, vector < TMatrix >, Float_t, Float_t
     //Energy Estimation
     nrg_est2 = MultipleScattering(trk2);
     //nrg_est2 = EnergyEst3D(trk2);
-    //cout << "nrg_est2: " << nrg_est2 << endl;
-
+    
     if (nrg_est2> 50000.) nrg_est2=50000.;
     if ((nrg_est2/en)<1/3){
       //loop1++;
@@ -964,14 +958,15 @@ tuple<vector < TMatrix >, Float_t, Float_t, vector < TMatrix >, Float_t, Float_t
       trk2.clear();
     } else stop=true;
   }
-  //cout << "en (2) : " << en << endl;
-
+  
   for (size_t i = 0; i < trk2.size(); i++) {
     mdebug<<"Track2 after Kalman "<<trk2.size()<<" "<<trk2[i](0,0)<<" "<<trk2[i](1,0)<<endl;
   }
   return std::make_tuple(trk1, nrg_est1, chi1, trk2, nrg_est2, chi2, Chosen1, Chosen2);
 }
 
+
+//returns an energy estimate. As of now, not sure whether the average of energies is being calculated correctly.
 Float_t MERTrackKalman3D::MultipleScattering(vector < TMatrix > trk)
 {
   Int_t n = trk.size();
@@ -984,17 +979,14 @@ Float_t MERTrackKalman3D::MultipleScattering(vector < TMatrix > trk)
 
   for (Int_t i = 0; i < n; i++) {
 
+//not known why these equations are used to set theta and phi
     vi0.SetTheta(acos(1/(pow(trk[i](3,0),2)+pow(trk[i](1,0),2)+1)));
     vi0.SetPhi(atan2(trk[i](3,0),trk[i](1,0)));
-    //cout << "vi0: " << vi0 << endl;
-    cout << "vi0 theta: " << vi0.Theta() << endl;
-    cout << "vi0 phi: " << vi0.Phi() << endl;
 
     if (i != 0) {
       Float_t angle = vi0.Angle(vi1);
-      cout << "angle between vi0 and vi1: " << angle << endl;
+      //Ei below seems to be from equation 34.16 from Particle Data Group: https://pdg.lbl.gov/2021/reviews/rpp2020-rev-passage-particles-matter.pdf
       Float_t Ei = (13.6/angle)*sqrt(m_heightX0/cos(vi0.Theta()))*(1+0.038*log(m_heightX0/cos(vi0.Theta())));
-      cout << "Ei: " << Ei << endl;
       if (isfinite(Ei)){
         E.push_back(Ei);
       } else{
@@ -1010,7 +1002,6 @@ Float_t MERTrackKalman3D::MultipleScattering(vector < TMatrix > trk)
   E.erase(E.begin());
 
   Float_t average = accumulate( E.begin(), E.end(), 0.0)/E.size();
-  cout << "average: " << average << endl;
 
   for ( uint j =0; j < E.size(); j++) {
     Float_t temp = pow((E[j] - average),2);
@@ -1018,11 +1009,11 @@ Float_t MERTrackKalman3D::MultipleScattering(vector < TMatrix > trk)
   }
 
   var = sqrt(sum /E.size());
-  cout << "var: " << var << endl;
 
   return E[lower_bound (E.begin(), E.end(), average-var)- E.begin()];
 }
 
+//not used
 Float_t MERTrackKalman3D::MultipleScattering3D(vector < TMatrix > trk, Double_t e0)
 {
   Double_t epsilon = 1.5;
@@ -1067,6 +1058,7 @@ Float_t MERTrackKalman3D::MultipleScattering3D(vector < TMatrix > trk, Double_t 
   return chi;
 }
 
+//not used
 Float_t MERTrackKalman3D::EnergyEst3D(vector < TMatrix > trk)
 {
   Int_t jjmax = 13;
@@ -1127,7 +1119,8 @@ void MERTrackKalman3D::TrackPairs(MRERawEvent* RE)
   // Now create the vertex:
   Electron->AddRESE(RE->GetVertex());
   Electron->SetStartPoint(RE->GetVertex());
-  Positron->AddRESE(RE->GetVertex());
+//commented out the below line since in the standard case, only the electron has the vertex added to it. Further work may need to be done to avoid any overcounting of hits.
+//  Positron->AddRESE(RE->GetVertex());
   Positron->SetStartPoint(RE->GetVertex());
 
   mdebug<<"Vertex : "<<" "<<RE->GetVertex()->GetPosition().X()<<" "<<RE->GetVertex()->GetPosition().Y()<<" "<<RE->GetVertex()->GetPosition().Z()<<endl;
@@ -1145,17 +1138,10 @@ void MERTrackKalman3D::TrackPairs(MRERawEvent* RE)
     Positron->AddRESE(Chosen2.GetRESEAt(r));
   }
 
-// add RESEs for hits not included in Chosen1 and Chosen2 tracks
-
-  cout << "Electron before loop: " << Electron->ToString() << endl;
-  cout << "Positron before loop: " << Positron->ToString() << endl;
-
-  int counter = 1;
+// add RESEs for hits not included in Chosen1 and Chosen2 tracks (aka all other hits + calorimeter)
 
   for (int r = 0; r < RE->GetNRESEs(); r++) {
     if (Chosen1.ContainsRESE(RE->GetRESEAt(r)) == false && Chosen2.ContainsRESE(RE->GetRESEAt(r)) == false) {
-      cout << "RESE not in Chosen1 or Chosen2: " << counter << endl;
-      counter = counter + 1;
       if (Electron->ComputeMinDistance(RE->GetRESEAt(r)) < Positron->ComputeMinDistance(RE->GetRESEAt(r))) {
         Electron->AddRESE(RE->GetRESEAt(r));
       } else {
@@ -1164,17 +1150,9 @@ void MERTrackKalman3D::TrackPairs(MRERawEvent* RE)
     }
   }
 
-  cout << "Electron after loop: " << Electron->ToString() << endl;
-  cout << "Positron after loop: " << Positron->ToString() << endl;
-
 // end of inserted code
 
   Egamma= E1+E2;
-
-//  cout << "E1: " << E1 << endl;
-//  cout << "E2: " << E2 << endl;
-//  cout << "Egamma: " << Egamma << endl;
-
 
   Float_t theta1x=Track1[0](1,0);
   Float_t theta1y=Track1[0](3,0);
@@ -1214,8 +1192,9 @@ void MERTrackKalman3D::TrackPairs(MRERawEvent* RE)
   Electron->SetFixedDirection(direction1);
   Positron->SetFixedDirection(direction2);
 
-  Electron->SetEnergy(E1*1000); //So far the energy was calculated in MeV, MEGAlib works in keV
-  Positron->SetEnergy(E2*1000);
+//Commented the below lines as they'd overwrite the energy with scattering angle values. We only use energies from the hits.
+//  Electron->SetEnergy(E1*1000); //So far the energy was calculated in MeV, MEGAlib works in keV
+//  Positron->SetEnergy(E2*1000);
 
   Electron->SetQualityFactor(ChiT1);
   Positron->SetQualityFactor(ChiT2);
